@@ -2,6 +2,7 @@
 var taskIdCounter = 0;
 var formEl = document.querySelector("#task-form");
 var tasksToDoEl = document.querySelector("#tasks-to-do");
+var pageContentEl = document.querySelector("#page-content");
 
 
 var taskFormHandler =  function(event) {
@@ -84,17 +85,57 @@ var createTaskActions = function(taskId) {
         var statusOptionEl = document.createElement("option");
         statusOptionEl.textContent = statusChoices[i];
         statusOptionEl.setAttribute("value", statusChoices[i]);
-      
+    
         // append to select
         statusSelectEl.appendChild(statusOptionEl);
-      }
-
-
-
+    }
     actionContainerEl.appendChild(statusSelectEl);
 
     return actionContainerEl;
 };
 
+var taskButtonHandler = function(event) {
+    // console.log(event.target);  
+    var targetEl = event.target;
+
+    // edit button was clicked
+    if (targetEl.matches(".edit-btn")) {
+        var taskId = targetEl.getAttribute("data-task-id");
+        editTask(taskId);
+        // console.log(taskId);
+    }
+
+    // delete button was clicked
+    if (targetEl.matches(".delete-btn")) {
+        var taskId = targetEl.getAttribute("data-task-id");
+        deleteTask(taskId);
+        // console.log(taskId);
+    }
+}; 
+
+var deleteTask = function(taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+    // console.log(taskSelected);
+    taskSelected.remove();
+}
+
+var editTask = function(taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    // get content from task name and type
+    var taskName = taskSelected.querySelector("h3.task-name").textContent;
+    console.log(taskName);  
+
+    var taskType = taskSelected.querySelector("span.task-type").textContent;
+    console.log(taskType); 
+
+    document.querySelector("input[name='task-name']").value = taskName;
+    document.querySelector("select[name='task-type']").value = taskType;
+    formEl.setAttribute("data-task-id", taskId);
+
+    document.querySelector("#save-task").textContent = "Save Task";
+}
+
 // buttonEl.addEventListener("click", createTaskHandler);
 formEl.addEventListener("submit",taskFormHandler);
+pageContentEl.addEventListener("click", taskButtonHandler);
